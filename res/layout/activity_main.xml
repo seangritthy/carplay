@@ -204,6 +204,56 @@
                 android:id="@+id/webViewGoogleMap"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+
+            <!-- Floating Mini Player Overlay when Map is Full Screen -->
+            <LinearLayout
+                android:id="@+id/miniPlayerOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="#E6141C2B"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:gravity="center_vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvMiniStation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="96.0 MHz - RNK FM"
+                    android:textColor="#00E5FF"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:singleLine="true" />
+
+                <Button
+                    android:id="@+id/btnMiniPrev"
+                    android:layout_width="48dp"
+                    android:layout_height="36dp"
+                    android:text="⏮"
+                    android:textColor="#FFFFFF"
+                    android:background="#1C273B" />
+
+                <Button
+                    android:id="@+id/btnMiniPlay"
+                    android:layout_width="60dp"
+                    android:layout_height="36dp"
+                    android:text="▶"
+                    android:textColor="#FFFFFF"
+                    android:background="#00E5FF"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp" />
+
+                <Button
+                    android:id="@+id/btnMiniNext"
+                    android:layout_width="48dp"
+                    android:layout_height="36dp"
+                    android:text="⏭"
+                    android:textColor="#FFFFFF"
+                    android:background="#1C273B" />
+            </LinearLayout>
         </FrameLayout>
     </LinearLayout>
 
