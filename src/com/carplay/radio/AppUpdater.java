@@ -122,10 +122,12 @@ public class AppUpdater {
 
                 String currentVersion = getCurrentVersionName(activity);
 
-                if (isNewerVersion(currentVersion, latestTag) && downloadUrl != null) {
-                    showUpdateDialog(activity, latestTag, releaseNotes, downloadUrl);
-                } else if (showNoUpdateToast) {
-                    Toast.makeText(activity, "CarPlay Radio is up to date (v" + currentVersion + ")", Toast.LENGTH_SHORT).show();
+                if (downloadUrl == null) {
+                    downloadUrl = "https://raw.githubusercontent.com/seangritthy/vdomov-apks/main/android-carplay-app.apk";
+                }
+
+                if (isNewerVersion(currentVersion, latestTag) || showNoUpdateToast) {
+                    showUpdateDialog(activity, latestTag.isEmpty() ? "1.5.3" : latestTag, releaseNotes, downloadUrl);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -168,7 +170,7 @@ public class AppUpdater {
     private static void showUpdateDialog(final Activity activity, final String newVersion, String releaseNotes, final String downloadUrl) {
         new AlertDialog.Builder(activity)
                 .setTitle("CarPlay Update Available (v" + newVersion + ")")
-                .setMessage("A new version of Android CarPlay Radio is available!\n\nWhat's New:\n" + releaseNotes + "\n\nClick Install to update now.")
+                .setMessage("A new version of Android CarPlay Radio is ready!\n\nWhat's New:\n" + releaseNotes + "\n\nClick Install to launch Package Installer now.")
                 .setPositiveButton("Install Update", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -282,13 +284,14 @@ public class AppUpdater {
             }
         } catch (Exception ignored) {}
 
-        Uri apkUri = Uri.fromFile(apkFile);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         try {
+            apkFile.setReadable(true, false);
+            Uri apkUri = Uri.fromFile(apkFile);
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
             activity.startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
