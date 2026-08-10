@@ -369,46 +369,7 @@ public class MainActivity extends Activity implements CarRadioEngine.StateListen
             }
         });
 
-        String googleMapHtml = "<!DOCTYPE html><html><head>"
-            + "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />"
-            + "<style>"
-            + "html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #0A0E17; font-family: sans-serif; }"
-            + "#mapframe { width: 100%; height: 100%; border: 0; }"
-            + ".speedometer-badge { position: absolute; top: 12px; right: 12px; z-index: 200; background: rgba(10,14,23,0.92); color: #00E5FF; padding: 8px 16px; border-radius: 20px; border: 2px solid #00E5FF; font-size: 16px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.7); display: flex; align-items: center; gap: 6px; }"
-            + ".hud-title { position: absolute; top: 12px; left: 180px; z-index: 200; background: rgba(20,28,43,0.9); color: #00E5FF; padding: 6px 12px; border-radius: 8px; border: 1px solid #00E5FF; font-size: 12px; font-weight: bold; }"
-            + ".crosshair-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 150; pointer-events: none; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }"
-            + ".crosshair-circle { width: 32px; height: 32px; border: 2px solid #00E5FF; border-radius: 50%; position: relative; box-shadow: 0 0 8px rgba(0,229,255,0.8); background: rgba(0,229,255,0.15); }"
-            + ".crosshair-circle::before { content: ''; position: absolute; top: 50%; left: -10px; right: -10px; height: 2px; background: #00E5FF; transform: translateY(-50%); }"
-            + ".crosshair-circle::after { content: ''; position: absolute; left: 50%; top: -10px; bottom: -10px; width: 2px; background: #00E5FF; transform: translateX(-50%); }"
-            + ".crosshair-dot { width: 6px; height: 6px; background: #FF1744; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; }"
-            + "</style></head><body>"
-            + "<div class='hud-title' id='hudStatus'>🚘 NAV: PHNOM PENH</div>"
-            + "<div class='speedometer-badge' id='speedBadge'>⚡ <span id='speedKmh'>0</span> Km/h</div>"
-            + "<div class='crosshair-overlay'><div class='crosshair-circle'><div class='crosshair-dot'></div></div></div>"
-            + "<iframe id='mapframe' src='https://maps.google.com/maps?q=11.5564,104.9282&amp;t=&amp;z=17&amp;ie=UTF8&amp;iwloc=&amp;output=embed' allowfullscreen></iframe>"
-            + "<script>"
-            + "var lastLat = 0, lastLng = 0;"
-            + "function updateDrivingGps(pos) {"
-            + "  var lat = pos.coords.latitude;"
-            + "  var lng = pos.coords.longitude;"
-            + "  var speedMps = pos.coords.speed || 0;"
-            + "  var speedKmh = Math.round(speedMps * 3.6);"
-            + "  document.getElementById('speedKmh').innerText = speedKmh;"
-            + "  document.getElementById('hudStatus').innerText = '🚘 NAV: ' + lat.toFixed(4) + ', ' + lng.toFixed(4);"
-            + "  if (Math.abs(lat - lastLat) > 0.00004 || Math.abs(lng - lastLng) > 0.00004) {"
-            + "    lastLat = lat;"
-            + "    lastLng = lng;"
-            + "    document.getElementById('mapframe').src = 'https://maps.google.com/maps?q=' + lat + ',' + lng + '&t=&z=17&ie=UTF8&iwloc=&output=embed';"
-            + "  }"
-            + "}"
-            + "if (navigator.geolocation) {"
-            + "  navigator.geolocation.watchPosition(updateDrivingGps, function(e) {"
-            + "    console.log('GPS error:', e);"
-            + "  }, { enableHighAccuracy: true, maximumAge: 1000, timeout: 5000 });"
-            + "}"
-            + "</script></body></html>";
-
-        webViewGoogleMap.loadDataWithBaseURL("https://maps.google.com", googleMapHtml, "text/html", "UTF-8", null);
+        webViewGoogleMap.loadUrl("https://www.google.com/maps/@11.5564,104.9282,14z?entry=ttu");
     }
 
     private void toggleWebMode() {
