@@ -209,7 +209,7 @@ public class MainActivity extends Activity implements CarRadioEngine.StateListen
         webViewVdomov.setWebViewClient(new WebViewClient());
         webViewVdomov.loadUrl("https://vdomov.vercel.app/radio");
 
-        // Setup Embedded Driving Navigation Map WebView
+        // Setup Embedded Google Maps Driving WebView
         WebSettings mapSettings = webViewGoogleMap.getSettings();
         mapSettings.setJavaScriptEnabled(true);
         mapSettings.setDomStorageEnabled(true);
@@ -217,29 +217,25 @@ public class MainActivity extends Activity implements CarRadioEngine.StateListen
         mapSettings.setGeolocationEnabled(true);
         mapSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         mapSettings.setUserAgentString("Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36");
-        webViewGoogleMap.setWebViewClient(new WebViewClient());
+        webViewGoogleMap.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
+        });
         webViewGoogleMap.setWebChromeClient(new android.webkit.WebChromeClient());
 
-        String mapHtml = "<!DOCTYPE html><html><head>"
+        String googleMapHtml = "<!DOCTYPE html><html><head>"
             + "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />"
-            + "<link rel='stylesheet' href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' />"
-            + "<script src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'></script>"
             + "<style>"
-            + "html, body, #map { width: 100%; height: 100%; margin: 0; padding: 0; background: #0A0E17; font-family: sans-serif; }"
-            + ".leaflet-control-attribution { display: none !important; }"
-            + ".hud-card { position: absolute; top: 12px; left: 12px; z-index: 1000; background: rgba(20,28,43,0.92); color: #00E5FF; padding: 10px 14px; border-radius: 8px; border: 1px solid #00E5FF; font-size: 13px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }"
+            + "html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #0A0E17; }"
+            + "iframe { width: 100%; height: 100%; border: 0; }"
             + "</style></head><body>"
-            + "<div class='hud-card'>🗺️ LIVE CAR NAVIGATION • PHNOM PENH</div>"
-            + "<div id='map'></div>"
-            + "<script>"
-            + "var map = L.map('map', { zoomControl: false }).setView([11.5564, 104.9282], 14);"
-            + "L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);"
-            + "L.control.zoom({ position: 'bottomright' }).addTo(map);"
-            + "var carIcon = L.divIcon({ html: '🚗', className: 'car-marker', iconSize: [30, 30], iconAnchor: [15, 15] });"
-            + "L.marker([11.5564, 104.9282], { icon: carIcon }).addTo(map).bindPopup('<b>Vehicle Location</b><br>Phnom Penh, Cambodia').openPopup();"
-            + "</script></body></html>";
+            + "<iframe src='https://maps.google.com/maps?q=Phnom+Penh,+Cambodia&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=&amp;output=embed' allowfullscreen></iframe>"
+            + "</body></html>";
 
-        webViewGoogleMap.loadDataWithBaseURL("https://openstreetmap.org", mapHtml, "text/html", "UTF-8", null);
+        webViewGoogleMap.loadDataWithBaseURL("https://maps.google.com", googleMapHtml, "text/html", "UTF-8", null);
     }
 
     private void toggleWebMode() {
