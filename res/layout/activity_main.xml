@@ -205,6 +205,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
+            <!-- Top HUD Overlay: Launch Native Google Maps App -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|left"
+                android:layout_margin="10dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnLaunchGoogleMaps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="🗺️ OPEN GOOGLE MAPS APP"
+                    android:textColor="#0A0E17"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:background="#00E5FF"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp" />
+            </LinearLayout>
+
             <!-- Floating Mini Player Overlay when Map is Full Screen -->
             <LinearLayout
                 android:id="@+id/miniPlayerOverlay"

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -152,6 +153,16 @@ public class MainActivity extends Activity implements CarRadioEngine.StateListen
             }
         });
 
+        Button btnLaunchGoogleMaps = findViewById(R.id.btnLaunchGoogleMaps);
+        if (btnLaunchGoogleMaps != null) {
+            btnLaunchGoogleMaps.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openNativeGoogleMapsApp();
+                }
+            });
+        }
+
         btnToggleWeb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -197,6 +208,26 @@ public class MainActivity extends Activity implements CarRadioEngine.StateListen
 
         // Auto play on app start
         radioEngine.playStation(0);
+    }
+
+    private void openNativeGoogleMapsApp() {
+        try {
+            Uri gmmIntentUri = Uri.parse("geo:11.5564,104.9282?q=Phnom+Penh");
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(mapIntent);
+            } else {
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps"));
+                startActivity(webIntent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps"));
+                startActivity(webIntent);
+            } catch (Exception ignored) {}
+        }
     }
 
     @Override
@@ -253,19 +284,28 @@ public class MainActivity extends Activity implements CarRadioEngine.StateListen
         webViewVdomov.setWebViewClient(new WebViewClient());
         webViewVdomov.loadUrl("https://vdomov.vercel.app/radio");
 
-        // Setup Embedded Google Maps Driving WebView
+        // Setup Embedded Dynamic Google Maps Driving WebView
         WebSettings mapSettings = webViewGoogleMap.getSettings();
         mapSettings.setJavaScriptEnabled(true);
         mapSettings.setDomStorageEnabled(true);
         mapSettings.setDatabaseEnabled(true);
         mapSettings.setGeolocationEnabled(true);
+        mapSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         mapSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         mapSettings.setUserAgentString("Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36");
         webViewGoogleMap.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
-                return true;
+                if (url != null && (url.startsWith("intent://") || url.startsWith("geo:") || url.contains("maps.app.goo.gl"))) {
+                    try {
+                        Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+                        startActivity(intent);
+                        return true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                return false;
             }
         });
         webViewGoogleMap.setWebChromeClient(new WebChromeClient() {
@@ -275,46 +315,7 @@ public class MainActivity extends Activity implements CarRadioEngine.StateListen
             }
         });
 
-        String googleMapHtml = "<!DOCTYPE html><html><head>"
-            + "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />"
-            + "<style>"
-            + "html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #0A0E17; font-family: sans-serif; }"
-            + "#mapframe { width: 100%; height: 100%; border: 0; }"
-            + ".hud-card { position: absolute; top: 10px; left: 10px; z-index: 100; background: rgba(20,28,43,0.92); color: #00E5FF; padding: 8px 12px; border-radius: 8px; border: 1px solid #00E5FF; font-size: 13px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 8px; }"
-            + ".speed-tag { background: #00E5FF; color: #0A0E17; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-left: 6px; }"
-            + ".gps-btn { position: absolute; bottom: 64px; right: 12px; z-index: 100; background: #00E5FF; color: #0A0E17; border: none; padding: 10px 14px; border-radius: 20px; font-weight: bold; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.6); cursor: pointer; }"
-            + "</style></head><body>"
-            + "<div class='hud-card' id='hudCard'><span>🚘 DRIVING NAV • SEARCHING GPS</span><span class='speed-tag' id='speedTag'>0 km/h</span></div>"
-            + "<button class='gps-btn' onclick='recenterMap()'>🎯 RE-CENTER</button>"
-            + "<iframe id='mapframe' src='https://maps.google.com/maps?q=11.5564,104.9282&amp;t=&amp;z=17&amp;ie=UTF8&amp;iwloc=&amp;output=embed' allowfullscreen></iframe>"
-            + "<script>"
-            + "var lastLat = 0, lastLng = 0;"
-            + "function updateDrivingLocation(pos) {"
-            + "  var lat = pos.coords.latitude;"
-            + "  var lng = pos.coords.longitude;"
-            + "  var speedMps = pos.coords.speed || 0;"
-            + "  var speedKmh = Math.round(speedMps * 3.6);"
-            + "  document.getElementById('hudCard').innerHTML = '<span>🚘 FOLLOWING DRIVING (' + lat.toFixed(4) + ', ' + lng.toFixed(4) + ')</span><span class=\"speed-tag\">' + speedKmh + ' km/h</span>';"
-            + "  if (Math.abs(lat - lastLat) > 0.00004 || Math.abs(lng - lastLng) > 0.00004) {"
-            + "    lastLat = lat;"
-            + "    lastLng = lng;"
-            + "    document.getElementById('mapframe').src = 'https://maps.google.com/maps?q=' + lat + ',' + lng + '&t=&z=17&ie=UTF8&iwloc=&output=embed';"
-            + "  }"
-            + "}"
-            + "function recenterMap() {"
-            + "  if (navigator.geolocation) {"
-            + "    navigator.geolocation.getCurrentPosition(updateDrivingLocation, null, { enableHighAccuracy: true });"
-            + "  }"
-            + "}"
-            + "if (navigator.geolocation) {"
-            + "  navigator.geolocation.watchPosition(updateDrivingLocation, function(e) {"
-            + "    console.log('GPS error:', e);"
-            + "  }, { enableHighAccuracy: true, maximumAge: 1000, timeout: 5000 });"
-            + "}"
-            + "</script>"
-            + "</body></html>";
-
-        webViewGoogleMap.loadDataWithBaseURL("https://maps.google.com", googleMapHtml, "text/html", "UTF-8", null);
+        webViewGoogleMap.loadUrl("https://www.google.com/maps/@11.5564,104.9282,14z?entry=ttu");
     }
 
     private void toggleWebMode() {
