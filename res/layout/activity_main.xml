@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0A0E17">
+
+    <!-- Top Car Driving Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#141C2B"
+        android:padding="10dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="CARPLAY • PHONE KEY"
+            android:textColor="#00E5FF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnUpdate"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:text="🔄 UPDATE"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="#FF9100"
+            android:layout_marginRight="6dp" />
+
+        <Button
+            android:id="@+id/btnKeyUnlock"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:text="🔑 UNLOCKED"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="#00C853"
+            android:layout_marginRight="6dp" />
+
+        <Button
+            android:id="@+id/btnToggleWeb"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:text="FULL APP"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="#1C273B" />
+
+        <Button
+            android:id="@+id/btnToggleMap"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:text="MAP SPLIT"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="#00E5FF"
+            android:layout_marginLeft="6dp" />
+    </LinearLayout>
+
+    <!-- Main Dual Display Container -->
+    <LinearLayout
+        android:id="@+id/mainSplitContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <!-- Left / Full Container: Web / Radio Dashboard -->
+        <FrameLayout
+            android:id="@+id/leftContentFrame"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <!-- Full VDOmov Web App Container -->
+            <WebView
+                android:id="@+id/webViewVdomov"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <!-- Car Radio Native Dashboard Layout -->
+            <LinearLayout
+                android:id="@+id/carDashboardLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Main Display Dashboard Card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="#141C2B"
+                    android:padding="16dp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tvFreq"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="96.0 MHz"
+                        android:textColor="#00E5FF"
+                        android:textSize="40sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvStationTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="RNK FM 96.0 MHz - Radio National of Cambodia"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:layout_marginTop="4dp" />
+
+                    <TextView
+                        android:id="@+id/tvStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PHONE KEY ACTIVE • CAR CONNECTED"
+                        android:textColor="#00C853"
+                        android:textSize="12sp"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <!-- Steering / Big Driving Controls -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="12dp">
+
+                    <Button
+                        android:id="@+id/btnPrev"
+                        android:layout_width="80dp"
+                        android:layout_height="60dp"
+                        android:text="&lt;&lt; PREV"
+                        android:textColor="#00E5FF"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:background="#1C273B" />
+
+                    <Button
+                        android:id="@+id/btnPlay"
+                        android:layout_width="120dp"
+                        android:layout_height="60dp"
+                        android:text="▶ PLAY"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:background="#00E5FF"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp" />
+
+                    <Button
+                        android:id="@+id/btnNext"
+                        android:layout_width="80dp"
+                        android:layout_height="60dp"
+                        android:text="NEXT &gt;&gt;"
+                        android:textColor="#00E5FF"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:background="#1C273B" />
+                </LinearLayout>
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="12dp">
+
+                    <LinearLayout
+                        android:id="@+id/presetContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </ScrollView>
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Right Container: Embedded Built-in Google Maps Navigation -->
+        <FrameLayout
+            android:id="@+id/rightMapFrame"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#0F172A">
+
+            <WebView
+                android:id="@+id/webViewGoogleMap"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
+    </LinearLayout>
+
+</LinearLayout>
