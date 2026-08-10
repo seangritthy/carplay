@@ -10,6 +10,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
@@ -27,7 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.List;
 
-public class MainActivity extends Activity implements CarRadioEngine.StateListener {
+public class MainActivity extends Activity implements CarRadioEngine.StateListener, LocationListener {
 
     private static final String TAG = "CarPlayMainActivity";
 
@@ -35,6 +38,7 @@ public class MainActivity extends Activity implements CarRadioEngine.StateListen
     private TextView tvFreq;
     private TextView tvStationTitle;
     private TextView tvStatus;
+    private TextView tvSpeedometer;
     private Button btnPlay;
     private Button btnPrev;
     private Button btnNext;
@@ -83,6 +87,7 @@ public class MainActivity extends Activity implements CarRadioEngine.StateListen
         tvFreq = findViewById(R.id.tvFreq);
         tvStationTitle = findViewById(R.id.tvStationTitle);
         tvStatus = findViewById(R.id.tvStatus);
+        tvSpeedometer = findViewById(R.id.tvSpeedometer);
         btnPlay = findViewById(R.id.btnPlay);
         btnPrev = findViewById(R.id.btnPrev);
         btnNext = findViewById(R.id.btnNext);
@@ -109,6 +114,8 @@ public class MainActivity extends Activity implements CarRadioEngine.StateListen
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             }, 101);
+        } else {
+            initLocationSpeedometer();
         }
 
         btnPlay.setOnClickListener(new View.OnClickListener() {
@@ -230,10 +237,57 @@ public class MainActivity extends Activity implements CarRadioEngine.StateListen
         }
     }
 
+    private void initLocationSpeedometer() {
+        try {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            if (locationManager != null && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
+                }
+                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 101 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            initLocationSpeedometer();
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if (location != null) {
+            float speedMps = location.hasSpeed() ? location.getSpeed() : 0f;
+            int speedKmh = Math.round(speedMps * 3.6f);
+            if (tvSpeedometer != null) {
+                tvSpeedometer.setText("⚡ " + speedKmh + " KM/H");
+            }
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        initLocationSpeedometer();
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {}
+
     @Override
     protected void onResume() {
         super.onResume();
         AppUpdater.checkResumeInstall(this);
+        initLocationSpeedometer();
     }
 
     @Override
