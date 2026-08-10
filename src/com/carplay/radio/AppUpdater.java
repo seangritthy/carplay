@@ -29,7 +29,7 @@ import java.net.URL;
 
 public class AppUpdater {
 
-    private static final String GITHUB_RELEASES_URL = "https://api.github.com/repos/seangritthy/vdomov-apks/releases";
+    private static final String GITHUB_RELEASES_URL = "https://api.github.com/repos/seangritthy/carplay/releases";
     private static File pendingApkFile = null;
 
     public static void checkForUpdates(final Activity activity, final boolean showNoUpdateToast) {
@@ -62,7 +62,7 @@ public class AppUpdater {
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("Accept", "application/vnd.github.v3+json");
-                conn.setRequestProperty("User-Agent", "VDomovCarPlayApp");
+                conn.setRequestProperty("User-Agent", "CarPlayRadioApp");
                 conn.setConnectTimeout(5000);
                 conn.setReadTimeout(5000);
 
@@ -103,7 +103,7 @@ public class AppUpdater {
 
             try {
                 String latestTag = result.optString("tag_name", "").replace("v", "").replace("carplay-", "").trim();
-                String releaseNotes = result.optString("body", "Bug fixes, CarPlay performance and new stations.");
+                String releaseNotes = result.optString("body", "Bug fixes, CarPlay performance and driving map updates.");
                 String downloadUrl = null;
 
                 JSONArray assets = result.optJSONArray("assets");
@@ -111,11 +111,9 @@ public class AppUpdater {
                     for (int i = 0; i < assets.length(); i++) {
                         JSONObject asset = assets.getJSONObject(i);
                         String name = asset.optString("name", "").toLowerCase();
-                        if (name.endsWith(".apk") && (name.contains("carplay") || name.contains("vdomov"))) {
+                        if (name.endsWith(".apk")) {
                             downloadUrl = asset.optString("browser_download_url", null);
-                            if (name.contains("carplay")) {
-                                break;
-                            }
+                            break;
                         }
                     }
                 }
@@ -123,11 +121,11 @@ public class AppUpdater {
                 String currentVersion = getCurrentVersionName(activity);
 
                 if (downloadUrl == null) {
-                    downloadUrl = "https://raw.githubusercontent.com/seangritthy/vdomov-apks/main/android-carplay-app.apk";
+                    downloadUrl = "https://github.com/seangritthy/carplay/releases/latest/download/android-carplay-app.apk";
                 }
 
                 if (isNewerVersion(currentVersion, latestTag) || showNoUpdateToast) {
-                    showUpdateDialog(activity, latestTag.isEmpty() ? "1.5.3" : latestTag, releaseNotes, downloadUrl);
+                    showUpdateDialog(activity, latestTag.isEmpty() ? "1.5.6" : latestTag, releaseNotes, downloadUrl);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
