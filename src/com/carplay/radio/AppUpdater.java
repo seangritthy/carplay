@@ -290,7 +290,36 @@ public class AppUpdater {
             intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            activity.startActivity(intent);
+            // Directly target system Package Installer to bypass app chooser dialog
+            String[] installerPackages = new String[] {
+                "com.android.packageinstaller",
+                "com.google.android.packageinstaller"
+            };
+
+            boolean launched = false;
+            for (String pkg : installerPackages) {
+                try {
+                    Intent pkgIntent = new Intent(intent);
+                    pkgIntent.setPackage(pkg);
+                    if (pkgIntent.resolveActivity(activity.getPackageManager()) != null) {
+                        activity.startActivity(pkgIntent);
+                        launched = true;
+                        break;
+                    }
+                } catch (Exception ignored) {}
+            }
+
+            if (!launched) {
+                Intent installIntent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                installIntent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                installIntent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+                if (installIntent.resolveActivity(activity.getPackageManager()) != null) {
+                    activity.startActivity(installIntent);
+                } else {
+                    activity.startActivity(intent);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(activity, "Error launching Package Installer: " + e.getMessage(), Toast.LENGTH_LONG).show();
